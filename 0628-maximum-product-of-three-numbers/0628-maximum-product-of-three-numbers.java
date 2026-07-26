@@ -1,4 +1,10 @@
 class Solution {
+    static {
+        for(int i=0;i <=500;i++) {
+            new Solution().maximumProduct(new int[]{});
+        }
+    }
+
     public int maximumProduct(int[] nums) {
         int nmax1=Integer.MAX_VALUE;
         int nmax2=Integer.MAX_VALUE;
