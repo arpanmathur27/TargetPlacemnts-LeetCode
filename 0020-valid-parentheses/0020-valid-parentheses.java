@@ -8,11 +8,11 @@ class Solution {
             else if(c=='[')stack.push(']');
             else
             {
-                if(stack.empty()||stack.pop()!=c)return false;
+                if(stack.isEmpty()||stack.pop()!=c)return false;
                 //if(stack.peek()==c)stack.pop();
             }
         }
-        return stack.empty(); 
+        return stack.isEmpty(); 
         
         
     }
