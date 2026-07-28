@@ -9,7 +9,6 @@ class Solution {
             else
             {
                 if(stack.isEmpty()||stack.pop()!=c)return false;
-                //if(stack.peek()==c)stack.pop();
             }
         }
         return stack.isEmpty(); 
