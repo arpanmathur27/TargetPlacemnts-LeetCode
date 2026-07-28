@@ -10,7 +10,7 @@ class Solution {
             freq[s.charAt(i)-'a']++;
         }
         StringBuilder z=new StringBuilder();
-        StringBuilder mid=new StringBuilder();
+        String mid="";
         for(int i=0;i<26;i++)
         {
             int hf=freq[i]/2;
@@ -20,7 +20,7 @@ class Solution {
             }
             if(freq[i]%2!=0)
             {
-                mid.append((char)(i+'a'));
+                mid=String.valueOf((char)(i+'a'));
             }
         }
         return z.toString()+mid.toString()+z.reverse().toString();
