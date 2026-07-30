@@ -1,19 +1,15 @@
 class Solution {
     public int minimumPushes(String word) {
-        int presses=1;
-        int keypad=0;
-        int minp=0;
-        for(char c:word.toCharArray())
+        int n= word.length();
+        int presses=0;
+        int loop=1+n/8;
+        for(int i=1;i<loop;i++)
         {
-            minp+=presses;
-            keypad++;
-            if(keypad==8)
-            {
-                keypad=0;
-                presses+=1;
-            }
+            presses+=i*8;
         }
-        return minp;
+        presses+=loop*(n%8);
+
+        return presses;
         
     }
 }
