@@ -1,6 +1,7 @@
 class Solution {
     public int minimumPushes(String word) {
         int []freq= new int[26];
+        int presses=0;
         int n=word.length();
         for(int i=0;i<n;i++)
         {
@@ -8,7 +9,6 @@ class Solution {
         }
 
         Arrays.sort(freq);
-        int presses=0;
         
         for(int i=25;i>=0;i--)
         {
