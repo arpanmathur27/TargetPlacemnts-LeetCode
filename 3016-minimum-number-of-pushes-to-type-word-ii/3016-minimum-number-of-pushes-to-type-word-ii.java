@@ -12,6 +12,7 @@ class Solution {
         
         for(int i=25;i>=0;i--)
         {
+            if (freq[i] == 0) break;
             presses+=freq[i]*((25-i)/8+1);
         }
         return presses;        
