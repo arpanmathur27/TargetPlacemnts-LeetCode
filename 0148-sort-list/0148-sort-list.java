@@ -21,10 +21,9 @@ class Solution {
             }
             Collections.sort(arr);
         }
-        int[] a = arr.stream().mapToInt(i -> i).toArray();
         ListNode h=new ListNode(0);
         ListNode temp=h;
-        for(int i:a)
+        for(int i:arr)
         {
             ListNode newNode= new ListNode(i,null);
             temp.next=newNode;
