@@ -8,12 +8,10 @@ class Solution {
 
         Arrays.sort(freq);
         int presses=0;
-        int loop=0;
         
         for(int i=25;i>=0;i--)
         {
-            presses+=((loop/8)+1)*freq[i];
-            loop++;
+            presses+=freq[i]*((25-i)/8+1);
         }
         return presses;        
     }
