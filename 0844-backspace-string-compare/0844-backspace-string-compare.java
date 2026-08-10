@@ -19,6 +19,7 @@ class Solution {
                 if(t.charAt(i)!='#')st2.push(t.charAt(i));
             }
         }
+        if(st1.size()!=st2.size())return false;
         
         if(st1.equals(st2))return true;
         return false;
