@@ -1,40 +1,57 @@
 class Solution {
-
     public int uniqueXorTriplets(int[] nums) {
-        if(nums.length == 1) return 1;
+        int n = nums.length;
 
-        int m = 0;
-        for (int v : nums) {
-            m = Math.max(m, v);
-        }
-        int u = 1;
-        while (u <= m) {
-            u <<= 1;
-        }
-        boolean[] one = new boolean[u];
-        boolean[] two = new boolean[u];
-        boolean[] three = new boolean[u];
-        for (int v : nums) {
-            one[v] = true;
-            for (int x = 0; x < u; x++) {
-                if (one[x]) {
-                    two[x ^ v] = true;
+        if (n == 1) return 1;
+        if (n == 2)
+            return (nums[0] == nums[1]) ? 1 : 2;
+
+        int max = nums[0];
+        for (int num : nums)
+            if (num > max)
+                max = num;
+
+        int bitLength = 32 - Integer.numberOfLeadingZeros(max);
+        int maxP = 1 << bitLength;
+
+        boolean[] set2 = new boolean[maxP];
+        set2[0] = true;
+        int set2Size = 1;
+
+        for (int i = 0; i < n; i++) 
+        {
+            for (int j = i + 1; j < n; j++) 
+            {
+                int x = nums[i] ^ nums[j];
+                if (!set2[x]) 
+                {
+                    set2[x] = true;
+                    set2Size++;
+                    if (set2Size == maxP)
+                        return maxP;
                 }
             }
         }
-        for (int v : nums) {
-            for (int x = 0; x < u; x++) {
-                if (two[x]) {
-                    three[x ^ v] = true;
+
+        boolean[] set3 = new boolean[maxP];
+        int set3Size = 0;
+
+        for (int x = 0; x < maxP; x++) 
+        {
+            if (!set2[x]) 
+                continue;
+
+            for (int num : nums) 
+            {
+                int y = x ^ num;
+                if (!set3[y]) {
+                    set3[y] = true;
+                    set3Size++;
+                    if (set3Size == maxP)
+                        return maxP;
                 }
             }
         }
-        int ans = 0;
-        for (boolean b : three) {
-            if (b) {
-                ans++;
-            }
-        }
-        return ans;
+        return set3Size;
     }
 }
