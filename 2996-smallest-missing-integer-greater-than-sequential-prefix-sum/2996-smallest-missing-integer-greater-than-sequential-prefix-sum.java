@@ -1,7 +1,7 @@
 class Solution {
     public int missingInteger(int[] nums) {
         int lsp=nums[0];
-        
+        Set<Integer>set=new HashSet<>();
         for (int i=1;i<nums.length;i++)
         {
 
@@ -11,14 +11,13 @@ class Solution {
                 lsp+=nums[i];
             }
         }
-        Arrays.sort(nums);
         for(int i=0;i<nums.length;i++)
         {
-            if(lsp==nums[i])
-            {
-                lsp++;
-                System.out.println(lsp);
-            }
+            set.add(nums[i]);
+        }
+        while(set.contains(lsp))
+        {
+            lsp++;
         }
         return lsp;
         
