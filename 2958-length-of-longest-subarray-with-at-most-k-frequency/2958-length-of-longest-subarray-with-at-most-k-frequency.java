@@ -6,22 +6,15 @@ class Solution {
         int right=left;
         while(right<nums.length)
         {
-            if(map.containsKey(nums[right])&&(map.get(nums[right])+1>k))            {
-                res=Math.max(res,(right-left));
-                while(map.get(nums[right])+1>k&&left<nums.length)
-                {
-                    map.put(nums[left],map.get(nums[left])-1);
-                    left++;
-                }
-                continue;
-            }
-            else
+            map.put(nums[right],map.getOrDefault(nums[right],0)+1);
+            while(map.get(nums[right])>k&&left<nums.length)
             {
-                map.put(nums[right],map.getOrDefault(nums[right],0)+1);
+                map.put(nums[left],map.get(nums[left])-1);
+                left++;
             }
+            res=Math.max(res,(right-left+1));
             right++;
-        }  
-        res=Math.max(res,(right-left)); 
+        }
         return res;
     }
 }
