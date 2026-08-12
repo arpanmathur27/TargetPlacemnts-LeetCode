@@ -3,8 +3,7 @@ class Solution {
         int res=0;
         HashMap<Integer,Integer>map=new HashMap<>();
         int left=0;        
-        int right=left;
-        while(right<nums.length)
+        for(int right=0;right<nums.length;right++)
         {
             map.put(nums[right],map.getOrDefault(nums[right],0)+1);
             while(map.get(nums[right])>k&&left<nums.length)
@@ -13,7 +12,6 @@ class Solution {
                 left++;
             }
             res=Math.max(res,(right-left+1));
-            right++;
         }
         return res;
     }
