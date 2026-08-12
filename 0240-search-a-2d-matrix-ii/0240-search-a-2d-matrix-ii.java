@@ -5,7 +5,7 @@ class Solution {
         while(m<x&&n>=0)
         {
             if(matrix[m][n]==target)return true;
-            else if(matrix[m][n]>target)n--;
+            if(matrix[m][n]>target)n--;
             else m++;
         }
         return false;
