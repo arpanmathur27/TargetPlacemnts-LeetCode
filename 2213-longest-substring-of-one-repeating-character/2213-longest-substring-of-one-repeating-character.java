@@ -1,65 +1,85 @@
 class Solution {
-    int[] pre, suf, best;
-    char[] s;
+    private static class SegmentTree {
+        private final int n;
+        private final int[] pre;
+        private final int[] suf;
+        private final int[] best;
+        private final char[] cs;
 
-    public int[] longestRepeating(String str, String q, int[] idx) {
-        s = str.toCharArray();
-        int n = s.length;
-        pre = new int[4*n];
-        suf = new int[4*n];
-        best = new int[4*n];
+        public SegmentTree(String s) {
+            n = s.length();
+            pre = new int[n << 2];
+            suf = new int[n << 2];
+            best = new int[n << 2];
+            cs = s.toCharArray();
 
-        build(1, 0, n-1);
+            build(1, 0, n - 1);
+        }
 
-        int[] ans = new int[idx.length];
+        private void build(int node, int l, int r) {
+            if (l == r) {
+                pre[node] = suf[node] = best[node] = 1;
+                return;
+            }
+            int mid = (l + r) >>> 1;
+            build(node << 1, l, mid);
+            build(node << 1 | 1, mid + 1, r);
+            pushUp(node, l, r);
+        }
 
-        for (int i = 0; i < idx.length; i++) {
-            s[idx[i]] = q.charAt(i);
-            update(1, 0, n-1, idx[i]);
-            ans[i] = best[1];
+        private void pushUp(int node, int l, int r) {
+            int left = node << 1;
+            int right = node << 1 | 1;
+            int mid = (l + r) >>> 1;
+            int lenL = mid - l + 1;
+            int lenR = r - mid;
+
+            pre[node] = pre[left];
+            suf[node] = suf[right];
+            best[node] = Math.max(best[left], best[right]);
+            if (cs[mid] == cs[mid + 1]) {
+                if (pre[left] == lenL) {
+                    pre[node] = lenL + pre[right];
+                }
+                if (suf[right] == lenR) {
+                    suf[node] = lenR + suf[left];
+                }
+                best[node] = Math.max(best[node], suf[left] + pre[right]);
+            }
+        }
+
+        public void update(int i) {
+            update(1, 0, n - 1, i);
+        }
+
+        private void update(int node, int l, int r, int i) {
+            if (l == r) {
+                return;
+            }
+            int mid = (l + r) >>> 1;
+            if (i <= mid) {
+                update(node << 1, l, mid, i);
+            } else {
+                update(node << 1 | 1, mid + 1, r, i);
+            }
+            pushUp(node, l, r);
+        }
+
+        public void updateChar(char c, int i) {
+            cs[i] = c;
+        }
+    }
+
+    public int[] longestRepeating(String s, String queryCharacters, int[] queryIndices) {
+        int k = queryIndices.length;
+        SegmentTree tree = new SegmentTree(s);
+        int[] ans = new int[k];
+        for (int i = 0; i < k; i++) {
+            int index = queryIndices[i];
+            tree.updateChar(queryCharacters.charAt(i), index);
+            tree.update(index);
+            ans[i] = tree.best[1];
         }
         return ans;
-    }
-
-    void build(int p, int l, int r) {
-        if (l == r) {
-            pre[p] = suf[p] = best[p] = 1;
-            return;
-        }
-        int m = (l+r)/2;
-        build(p*2, l, m);
-        build(p*2+1, m+1, r);
-        merge(p, l, r);
-    }
-
-    void update(int p, int l, int r, int x) {
-        if (l == r) {
-            pre[p] = suf[p] = best[p] = 1;
-            return;
-        }
-
-        int m = (l+r)/2;
-        if (x <= m) update(p*2, l, m, x);
-        else update(p*2+1, m+1, r, x);
-
-        merge(p, l, r);
-    }
-
-    void merge(int p, int l, int r) {
-        int a = p*2, b = p*2+1, m = (l+r)/2;
-
-        pre[p] = pre[a];
-        suf[p] = suf[b];
-        best[p] = Math.max(best[a], best[b]);
-
-        if (s[m] == s[m+1]) {
-            best[p] = Math.max(best[p], suf[a] + pre[b]);
-
-            if (pre[a] == m-l+1)
-                pre[p] += pre[b];
-
-            if (suf[b] == r-m)
-                suf[p] += suf[a];
-        }
     }
 }
