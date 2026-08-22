@@ -1,59 +1,33 @@
 class Solution {
     public int maxNumberOfFamilies(int n, int[][] reservedSeats) {
+        // Store only rows that actually have relevant reservations.
+        Map<Integer, Integer> map = new HashMap<>();
 
-        int l = 0, r = 0, prev = 0;
-        int sz = reservedSeats.length;
+        // Bits 2..9 are relevant.
+        for (int[] seat : reservedSeats) {
+            int row = seat[0];
+            int s = seat[1];
 
-        Arrays.sort(reservedSeats, (a, b) -> a[0] - b[0]);
-
-        boolean[] isReserved = new boolean[11];
-        int ans = 0;
-
-        while (r < sz) {
-
-            // Count rows with no reservations
-            ans += 2 * (reservedSeats[r][0] - prev - 1);
-
-            prev = reservedSeats[r][0];
-
-            // Mark all reserved seats in the current row
-            while (r < sz && reservedSeats[l][0] == reservedSeats[r][0]) {
-                isReserved[reservedSeats[r][1]] = true;
-                r++;
+            if (s >= 2 && s <= 9) {
+                map.put(row, map.getOrDefault(row, 0) | (1 << s));
             }
-
-            // Check the three possible groups
-            boolean twoToFive = check(isReserved, 2, 5);
-            boolean fourToSeven = check(isReserved, 4, 7);
-            boolean sixToNine = check(isReserved, 6, 9);
-
-            // Two non-overlapping groups
-            if (twoToFive && sixToNine) {
-                ans += 2;
-            }
-            // At least one group is available
-            else if (twoToFive || fourToSeven || sixToNine) {
-                ans++;
-            }
-
-            l = r;
-
-            // Reset for the next row
-            Arrays.fill(isReserved, false);
         }
 
-        // Remaining rows are completely empty
-        ans += 2 * (n - prev);
+        // Every untouched row can fit 2 groups.
+        int ans = (n - map.size()) * 2;
+
+        for (int mask : map.values()) {
+            boolean left  = (mask & ((1 << 2) | (1 << 3) | (1 << 4) | (1 << 5))) == 0;
+            boolean right = (mask & ((1 << 6) | (1 << 7) | (1 << 8) | (1 << 9))) == 0;
+            boolean middle = (mask & ((1 << 4) | (1 << 5) | (1 << 6) | (1 << 7))) == 0;
+
+            if (left && right) {
+                ans += 2;
+            } else if (left || right || middle) {
+                ans += 1;
+            }
+        }
 
         return ans;
-    }
-
-    public boolean check(boolean[] b, int l, int r) {
-        for (int i = l; i <= r; i++) {
-            if (b[i]) {
-                return false;
-            }
-        }
-        return true;
     }
 }
