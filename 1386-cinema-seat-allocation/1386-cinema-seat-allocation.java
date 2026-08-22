@@ -1,33 +1,63 @@
 class Solution {
     public int maxNumberOfFamilies(int n, int[][] reservedSeats) {
-        // Store only rows that actually have relevant reservations.
-        Map<Integer, Integer> map = new HashMap<>();
+        int count = n * 2;
 
-        // Bits 2..9 are relevant.
+        if (n <= 100000) {
+            int[] rows = new int[n + 1];
+            for (int[] seat : reservedSeats) {
+                rows[seat[0]] |= (1 << seat[1]);
+            }
+
+            for (int i = 1; i <= n; i++) {
+                int mask = rows[i];
+                if (mask == 0) continue;
+                
+                if ((mask & 240) == 0) {
+                    if ((mask & 12) != 0 || (mask & 768) != 0) {
+                        count -= 1;
+                    }
+                } else {
+                    if ((mask & 60) == 0 || (mask & 960) == 0) {
+                        count -= 1;
+                    } else {
+                        count -= 2;
+                    }
+                }
+            }
+            return count;
+        }
+
+        int[] keys = new int[32768];
+        int[] vals = new int[32768];
+
         for (int[] seat : reservedSeats) {
             int row = seat[0];
-            int s = seat[1];
+            int pos = row & 32767;
+            
+            while (keys[pos] != 0 && keys[pos] != row) {
+                pos = (pos + 1) & 32767;
+            }
+            
+            keys[pos] = row;
+            vals[pos] |= (1 << seat[1]);
+        }
 
-            if (s >= 2 && s <= 9) {
-                map.put(row, map.getOrDefault(row, 0) | (1 << s));
+        for (int mask : vals) {
+            if (mask == 0) continue;
+            
+            if ((mask & 240) == 0) {
+                if ((mask & 12) != 0 || (mask & 768) != 0) {
+                    count -= 1;
+                }
+            } else {
+                if ((mask & 60) == 0 || (mask & 960) == 0) {
+                    count -= 1;
+                } else {
+                    count -= 2;
+                }
             }
         }
 
-        // Every untouched row can fit 2 groups.
-        int ans = (n - map.size()) * 2;
-
-        for (int mask : map.values()) {
-            boolean left  = (mask & ((1 << 2) | (1 << 3) | (1 << 4) | (1 << 5))) == 0;
-            boolean right = (mask & ((1 << 6) | (1 << 7) | (1 << 8) | (1 << 9))) == 0;
-            boolean middle = (mask & ((1 << 4) | (1 << 5) | (1 << 6) | (1 << 7))) == 0;
-
-            if (left && right) {
-                ans += 2;
-            } else if (left || right || middle) {
-                ans += 1;
-            }
-        }
-
-        return ans;
+        return count;
     }
 }
