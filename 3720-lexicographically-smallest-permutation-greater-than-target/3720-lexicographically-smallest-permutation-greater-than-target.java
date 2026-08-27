@@ -1,70 +1,53 @@
 class Solution {
     public String lexGreaterPermutation(String s, String target) {
-        // "smallest" that is strictly greater than
-        // it means we match as far as we can
-        // then when we can't match anymore, we go up.
-        // after we go up on one, we do the rest by minimal lexicographical ordering.
+        int[] cnt = new int[26];
 
-        // 1. count chars in each
-        // 2. match as far as you can, record this as maxPrefixLength or smth. (startIndex below)
-        // 3. see if there is a higher character we can fill in with
-        // if there is, we're good. go to step 4
-        // if there is not a higher character, we matched too far.
-        // try un-doing matching the last character. repeat step 3
-        // until you get a valid prefix and a minimal character that beats
-        // target lexicographically.
-        // 4. lexicographical minimum from that point.
-        // 5. if we never found a result from 3 or 4, we couldn't complete the mission. return "".
-
-        int[] sCount = new int[26];
-
-        for(int i = 0; i < s.length(); i++) {
-            sCount[s.charAt(i) - 'a']++;
+        for (char ch : s.toCharArray()) {
+            cnt[ch - 'a']++;
         }
 
-        // phase two
-        // think of count in s as your bank, then you greedily pay out
-        int startIndex = 0;
-        while(startIndex < target.length() && sCount[target.charAt(startIndex) - 'a'] > 0) {
-            sCount[target.charAt(startIndex) - 'a'] -= 1;
-            startIndex++;
+        for (char ch : target.toCharArray()) {
+            cnt[ch - 'a']--;
         }
 
-        // phase three: we have to try and see if we can make a lexicographically larger value now.
-        for(int i = startIndex; i >= 0; i--) {
-            if(i < startIndex) {
-                // pay back the character.
-                sCount[target.charAt(i) - 'a']++;
-            }
+        for (int i = target.length() - 1; i >= 0; i--) {
+            int cur = target.charAt(i) - 'a';
+            cnt[cur]++;
 
-            // now we try and make a lexicographically better result.
-            if(i < s.length()) {
-                int targetChar = target.charAt(i) - 'a';
-                for(int c = targetChar + 1; c < 26; c++) {
-                    if(sCount[c] > 0) {
-                        // we have found a smallest character that's bigger than the next thing in target
-                        // and we still have it available to use. We have a result.
-                        StringBuilder result = new StringBuilder();
-                        result.append(target.substring(0, i)); // does not include index i - correct
-                        result.append((char)(c + 'a'));
-                        sCount[c]--;
-                        
-                        // now just construct the rest of the characters in the best way possible.
-                        // fill in earliest possible characters as soon as we can.
-                        for(int j = 0; j < 26; j++) {
-                            while(sCount[j] > 0) {
-                                result.append((char)(j + 'a'));
-                                sCount[j]--;
-                            }
-                        }
-
-                        return result.toString();
-                    }
+            boolean ok = true;
+            for (int x : cnt) {
+                if (x < 0) {
+                    ok = false;
+                    break;
                 }
             }
+
+            if (!ok) continue;
+
+            int next = -1;
+            for (int c = cur + 1; c < 26; c++) {
+                if (cnt[c] > 0) {
+                    next = c;
+                    break;
+                }
+            }
+
+            if (next == -1) continue;
+
+            cnt[next]--;
+
+            StringBuilder ans = new StringBuilder(target.substring(0, i));
+            ans.append((char) ('a' + next));
+
+            for (int c = 0; c < 26; c++) {
+                while (cnt[c]-- > 0) {
+                    ans.append((char) ('a' + c));
+                }
+            }
+
+            return ans.toString();
         }
 
-        // could not complete the mission. we're screwed.
         return "";
     }
 }
